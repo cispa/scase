@@ -23,7 +23,7 @@ If there are questions regarding this tool, please send an email to `daniel.webe
 The paper will be available [very soon](TODO).
 You can cite our work with the following BibTeX entry:
 ```
-@inproceedings{Weber2025scase,
+@inproceedings{Weber2025SCASE,
  author={Weber, Daniel and Gerlach, Lukas and Trampert, Leon and Lue, Youheng and Van Bulck, Jo and Schwarz, Michael},
  booktitle = {USENIX},
  title={SCASE: Automated Secret Recovery via Side-Channel-Assisted Symbolic Execution},
