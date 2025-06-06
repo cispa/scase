@@ -20,7 +20,7 @@ For the SGX tracing component, one needs to install [SGX-Step](https://github.co
 If there are questions regarding this tool, please send an email to `daniel.weber (AT) cispa.de` or message `@weber_daniel` on Twitter.
 
 ## Research Paper
-The paper is available [very soon](TODO).
+The paper will be available [very soon](TODO).
 You can cite our work with the following BibTeX entry:
 ```
 @inproceedings{Weber2025scase,
