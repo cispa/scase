@@ -21,6 +21,9 @@ from engine import utils
 EVAL_PREFIX = "aes_sbox"
 EVAL_PATH = f"eval_data_{EVAL_PREFIX}"
 
+OPENSSL_LIBCRYPTO_PATH = "../victim-programs/openssl-aes-sbox/openssl/libcrypto.a"
+OPENSSL_LIBSSL_PATH = "../victim-programs/openssl-aes-sbox/openssl/libssl.a"
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -47,7 +50,7 @@ def preprocessing(iteration=0, ignore_lower_bits=0, keysize=1):
     with open(f"{EVAL_PATH}_{keysize}/seed_{ignore_lower_bits}_{iteration}.txt", "w") as f:
         f.write(str(random_seed))
 
-    with open("./examples/aes-sbox/victim.c", "r") as fd_src:
+    with open("../victim-programs/openssl-aes-sbox/victim.c", "r") as fd_src:
       with open(f"{EVAL_PATH}_{keysize}/victim_{ignore_lower_bits}_{iteration}.c", "w") as fd_dst:
           for line in fd_src:
               if "---KEY BYTES---" in line:
@@ -61,7 +64,7 @@ def preprocessing(iteration=0, ignore_lower_bits=0, keysize=1):
       f.write(f"{random_seed:064x}\n")
 
     print(f"[-] Compiling with seed {random_seed}")
-    compile_cmd = f"gcc {EVAL_PATH}_{keysize}/victim_{ignore_lower_bits}_{iteration}.c -static -O0 -ggdb -Wall -I../sbox-aes/openssl/include/ -L../sbox-aes/openssl/ -lcrypto -o victim"
+    compile_cmd = f"gcc {EVAL_PATH}_{keysize}/victim_{ignore_lower_bits}_{iteration}.c -static -O0 -ggdb -Wall -I../victim-programs/openssl-aes-sbox/openssl/include/ -L../victim-programs-openssl-aes-sbox/openssl/ -lcrypto -o victim"
     os.system(compile_cmd)
     compile_res = subprocess.run(["/bin/bash", "-c", compile_cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     assert compile_res.returncode == 0, "[!] Compilation failed"
@@ -81,6 +84,14 @@ def postprocessing(iteration=0, ignore_lower_bits=0, keysize=1):
     os.system(f"mv cftrace.csv {EVAL_PATH}_{keysize}/cftrace_{ignore_lower_bits}_{iteration}")
     os.system(f"mv dftrace.csv {EVAL_PATH}_{keysize}/dftrace_{ignore_lower_bits}_{iteration}")
 
+def switch_endianess(bs):
+    assert len(bs) % 4 == 0
+    r = b''
+    for i in range(0, len(bs), 4):
+        for pos in [i+3,i+2,i+1,i]:
+            r += int.to_bytes(bs[pos], 1, byteorder='big')
+    return r
+
 def solve(iteration=0, ignore_lower_bits=0, keysize=1):
     TARGET_PATH = "./victim"
     CFTRACE_FILE = "./cftrace.csv"
@@ -90,7 +101,7 @@ def solve(iteration=0, ignore_lower_bits=0, keysize=1):
 
     BINARY_BASE_ADDR = 0x0
 
-    logging_enabled = False
+    logging_enabled = True
     athena.IGNORE_LOWER_BITS = ignore_lower_bits
     exploration_technique.IGNORE_LOWER_BITS = ignore_lower_bits
     utils.IGNORE_LOWER_BITS = ignore_lower_bits
@@ -128,10 +139,13 @@ def solve(iteration=0, ignore_lower_bits=0, keysize=1):
     start_time = time.time()
     solution = athena_framework.solve(secret)
     solve_time = time.time() - start_time
-    solution_enc = solution.to_bytes(secret_len, byteorder='big')
+    solution_enc = switch_endianess(solution.to_bytes(secret_len, byteorder='big'))
     return solution_enc, run_time, solve_time
 
 if __name__ == "__main__":
+    if not os.path.exists(OPENSSL_LIBCRYPTO_PATH) or not os.path.exists(OPENSSL_LIBSSL_PATH):
+        log_warning("OpenSSL libraries not found. Please build OpenSSL first.")
+        exit(1)
     for keysize in [256]:
         print(f"\nKEYSIZE = {keysize}")
         os.makedirs(f"{EVAL_PATH}_{keysize}", exist_ok=True)
@@ -146,12 +160,14 @@ if __name__ == "__main__":
                 solution, run_time, solve_time = solve(ignore_lower_bits=bits, iteration=it, keysize=keysize)
                 with open(f"{EVAL_PATH}_{keysize}/key_{bits}_{it}.hex", "rb") as f:
                     key = f.read()
-                # key = "514dab12ffddb332528fbb1dec45cecc4f6e9c2a155f5f0b25776b70cde2f780"
-                # key = bytes.fromhex(key)
-                key = bytes.fromhex(key.strip().decode('ascii'))
-                max_len = max(len(key), len(solution))
-                key = key.rjust(max_len, b'\x00')
-                solution = solution.rjust(max_len, b'\x00')
+                key = "514dab12ffddb332528fbb1dec45cecc4f6e9c2a155f5f0b25776b70cde2f780"
+                key = bytes.fromhex(key)
+                #key = bytes.fromhex(key.strip().decode('ascii'))
+                #max_len = max(len(key), len(solution))
+                #key = key.rjust(max_len, b'\x00')
+                #solution = solution.rjust(max_len, b'\x00')
+                key = key.strip(b"\x00")
+                solution = solution.strip(b"\x00")
                 key_bits = ''.join(f'{b:08b}' for b in key)
                 solution_bits = ''.join(f'{b:08b}' for b in solution)
                 diffs = [(i, x, y) for i, (x, y) in enumerate(zip(key_bits, solution_bits)) if x != y]
@@ -159,8 +175,8 @@ if __name__ == "__main__":
                     log_success(f"Solution is correct")
                 else:
                     log_warning(f"Solution is incorrect: {len(diffs)} bits differ")
-                    print(f"Solution: {solution}")
-                    print(f"Recovered: {key}")
+                    print(f"athena: {solution}")
+                    print(f"actual key: {key}")
                 print(f"[+] Finished in {run_time:.2f} seconds (run) and {solve_time:.2f} seconds (solve)")
                 postprocessing(iteration=it, ignore_lower_bits=bits, keysize=keysize)
                 print(f"")
