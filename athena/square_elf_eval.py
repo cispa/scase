@@ -15,6 +15,9 @@ import time
 
 from engine import athena
 
+CODE_PATH = "../victim-programs/square-multiply"
+STACK_OFFSET = 0x30
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -39,18 +42,18 @@ def preprocessing(iteration=0, keysize=0):
         f.write(str(random_seed))
 
     print(f"[-] Compiling with seed {random_seed}")
-    compile_cmd = f"gcc examples/square_elf/main.c -DSEED={random_seed} -DKEYSIZE={keysize} -O0 -fcf-protection=none -ggdb -Wall -o examples/square_elf/main"
+    compile_cmd = f"gcc {CODE_PATH}/main.c -DSEED={random_seed} -DKEYSIZE={keysize} -O0 -fcf-protection=none -ggdb -Wall -o main"
     compile_res = subprocess.run(["/bin/bash", "-c", compile_cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     assert compile_res.returncode == 0, "[!] Compilation failed"
 
     print("[-] Generating key.hex...")
-    os.system("./examples/square_elf/main")
+    os.system("./main")
     assert os.path.exists("key.hex"), "[!] key.hex not found"
     os.system(f"mv key.hex eval_data_square/key_{keysize}_{iteration}.hex")
 
     print("[-] Tracing...")
     # trace the binary and generate ./cftrace.csv and ./dftrace.csv
-    trace_res = subprocess.run(["/bin/bash", "-c", "python3 tracers/tracer-angr/main.py mod_exp_inner examples/square_elf/main"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    trace_res = subprocess.run(["/bin/bash", "-c", "python3 tracers/tracer-angr/main.py mod_exp_inner main"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     assert "Finished" in trace_res.stdout.decode(), "[!] Tracing failed"
     assert os.path.exists("./cftrace.csv"), "[!] Control-flow trace not found"
     assert os.path.exists("./dftrace.csv"), "[!] Data-flow trace not found"
@@ -59,12 +62,12 @@ def preprocessing(iteration=0, keysize=0):
 
 def postprocessing(iteration=0, keysize=0):
     print("[-] Cleaning up...")
-    os.system(f"mv examples/square_elf/main eval_data_square/main_{keysize}_{iteration}")
+    os.system(f"mv main eval_data_square/main_{keysize}_{iteration}")
     os.system(f"mv cftrace.csv eval_data_square/cftrace_{keysize}_{iteration}")
     os.system(f"mv dftrace.csv eval_data_square/dftrace_{keysize}_{iteration}")
 
 def solve(iteration=0, keysize=0):
-    TARGET_PATH = "./examples/square_elf/main"
+    TARGET_PATH = "./main"
     CFTRACE_FILE = "./cftrace.csv"
     DFTRACE_FILE = "./dftrace.csv"
     TARGET_ECALL = "mod_exp"  # execution starts here
@@ -72,7 +75,7 @@ def solve(iteration=0, keysize=0):
 
     BINARY_BASE_ADDR = 0x0
 
-    logging_enabled = True
+    logging_enabled = False
     athena.IGNORE_LOWER_BITS = 0 # HARDCODED byte granularity
     athena_framework = athena.AthenaFramework(
         TARGET_PATH,
@@ -97,7 +100,7 @@ def solve(iteration=0, keysize=0):
     rsi_ptr = initial_state.regs.rsi.concrete_value
 
     # ATTENTION: this is a hack to fix the stack pointer
-    rsp_offset_fix = initial_state.regs.rsp.concrete_value - 0x50
+    rsp_offset_fix = initial_state.regs.rsp.concrete_value - STACK_OFFSET
     initial_state.regs.rsp = rsp_offset_fix
 
     initial_state.memory.store(rsi_ptr, secret)
@@ -126,6 +129,10 @@ if __name__ == "__main__":
             solution, run_time, solve_time = solve(keysize=keysize, iteration=it)
             with open(f"eval_data_square/key_{keysize}_{it}.hex", "rb") as f:
                 key = f.read()
+            # ignore leading zeros
+            solution = solution.lstrip("0")
+            solution = solution.encode("ascii")
+            key = key.lstrip(b'0')
             incorrect_bytes = 0
             for i in range(len(key)):
                 if key[i] != solution[i]:
