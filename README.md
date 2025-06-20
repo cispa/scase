@@ -12,7 +12,7 @@ The code was developed and tested on Ubuntu 22.04 and Arch Linux.
 Most dependencies can be installed by simply running `pip3 install -r ./athena/requirements.txt`.
 Furthermore, one needs to install the following (Ubuntu) packages:
 ```
-apt install build-essentials libelf-dev 
+apt install build-essential libelf-dev 
 ```
 For the SGX tracing component, one needs to install [SGX-Step](https://github.com/jovanbulck/sgx-step) according to the installation instructions in its repo.
 
