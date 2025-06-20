@@ -16,7 +16,7 @@ from engine.exploration_technique import TraceGuidedExploration
 from engine.utils import *
 
 logger = logging.getLogger(__name__)
-#logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.DEBUG)
 #logging.getLogger('angr.sim_manager').setLevel(logging.DEBUG)
 #logging.getLogger('angr.storage').setLevel(logging.DEBUG)
 #logging.getLogger('angr').setLevel(logging.DEBUG)
@@ -74,6 +74,7 @@ class AthenaFramework:
             self.dftrace = read_tracefile(data_flow_tracefile)
 
         if suppress_all_logging:
+            print("Suppressing all logging output.")
             self.verbose = False
             logging.getLogger('engine.athena').setLevel(logging.CRITICAL)
             logging.getLogger('angr').setLevel(logging.CRITICAL)
@@ -265,12 +266,12 @@ class AthenaFramework:
             self.simgr.active[0] = self.simgr.active[0].copy()
             self.simgr.active[0].options.remove(angr.sim_options.COPY_STATES)
 
-        self.simgr.active[0].options.add(angr.options.DOWNSIZE_Z3)
-        self.simgr.active[0].options.add(angr.options.SIMPLIFY_EXPRS)
-        self.simgr.active[0].options.add(angr.options.MEMORY_SYMBOLIC_BYTES_MAP)
-        self.simgr.active[0].options.add(angr.options.SIMPLIFY_CONSTRAINTS)
-        self.simgr.active[0].options.add(angr.options.TRACK_MEMORY_ACTIONS)
-        self.simgr.active[0].options.add(angr.options.SIMPLIFY_EXPRS)
+            self.simgr.active[0].options.add(angr.options.DOWNSIZE_Z3)
+            self.simgr.active[0].options.add(angr.options.SIMPLIFY_EXPRS)
+            self.simgr.active[0].options.add(angr.options.MEMORY_SYMBOLIC_BYTES_MAP)
+            self.simgr.active[0].options.add(angr.options.SIMPLIFY_CONSTRAINTS)
+            self.simgr.active[0].options.add(angr.options.TRACK_MEMORY_ACTIONS)
+            self.simgr.active[0].options.add(angr.options.SIMPLIFY_EXPRS)
 
         return state
         

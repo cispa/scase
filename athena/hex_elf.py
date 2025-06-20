@@ -9,9 +9,9 @@ import logging
 
 from engine import athena
 
-TARGET_PATH = "./examples/hex_elf/main"
-CFTRACE_FILE = "./tracers/tracer-angr/cftrace.csv"
-DFTRACE_FILE = "./tracers/tracer-angr/dftrace.csv"
+TARGET_PATH = "../traces/jump-table/data_g01/main_12_0"
+CFTRACE_FILE = "../traces/jump-table/data_g01/cftrace_12_0"
+DFTRACE_FILE = "../traces/jump-table/data_g01/dftrace_12_0"
 TARGET_ECALL = "do_something"  # execution starts here
 TARGET_FUNC = "something" # secret is symbolized are added here
 

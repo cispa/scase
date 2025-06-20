@@ -15,15 +15,10 @@ extern sgx_enclave_id_t eid;
     #define ANIMATION_DELAY    5000
 #endif
 
-
-//#define CFG_EXAMPLE_CF_TRACE
-//#define CFG_EXAMPLE_DF_TRACE
-//#define CFG_RC4_TRACE
-
 // =============== CALLBACKS/VARIABLES TO IMPLEMENT/SET ========================
 
 #ifdef CFG_SM_TRACE
-#define SGX_ENCLAVE_PATH "../../examples/sm_enclave/encl.so"
+#define SGX_ENCLAVE_PATH "../../../victim-programs/square-multiply-enclave/encl.so"
 #define TARGET_FUNCTION "mod_exp_inner"
 
 sgx_status_t execute_ecall(int* enclave_result) {
@@ -84,20 +79,6 @@ sgx_status_t execute_ecall(int* enclave_result) {
     uint64_t result = -1;
     // the enclave E-call
     sgx_status_t status = do_gfops(eid,&result);
-    return status;
-}
-#endif
-
-#ifdef CFG_HELLOWORLD_OE_TRACE
-#define SGX_ENCLAVE_PATH "../../../sgx-step/app/oe/enclave/enclave"
-#define TARGET_FUNCTION "mod_exp_inner"
-
-sgx_status_t execute_ecall(int* enclave_result) {
-    uint64_t result = -1;
-    // the enclave E-call
-    sgx_status_t status = mod_exp(eid,
-        &result);
-    *enclave_result = result;
     return status;
 }
 #endif

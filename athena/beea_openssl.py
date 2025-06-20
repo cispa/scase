@@ -15,9 +15,9 @@ from engine import constants
 from engine import utils
 
 
-TARGET_PATH = "../openssl-rsa-keygen-attack/main-minlibc"
-CFTRACE_FILE = "./tracers/tracer-angr/cftrace.csv"
-DFTRACE_FILE = "./tracers/tracer-angr/dftrace.csv"
+TARGET_PATH = "../traces/openssl-beea/victim"
+CFTRACE_FILE = "../traces/openssl-beea/cftrace.csv"
+DFTRACE_FILE = "../traces/openssl-beea/dftrace.csv"
 TARGET_ECALL = "main"  # execution starts here
 TARGET_FUNC = "BN_gcd" # secret is symbolized are added here
 

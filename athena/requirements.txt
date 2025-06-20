@@ -1,5 +1,5 @@
 angr
-#./dependencies/guardian
+./dependencies/guardian
 tqdm
 setuptools
 IPython

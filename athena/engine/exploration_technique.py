@@ -83,7 +83,8 @@ class TraceGuidedExploration(angr.ExplorationTechnique):
 
         for state in active_states:
             state.history.trim()
-            print(f"DBG: State @ 0x{state.addr:x}")
+            if self.verbose:
+                print(f"State @ 0x{state.addr:x}")
             if state.regs.rip.concrete_value == 0x0:
                 # this happens when we return from the highest function
                 # i.e., when we return from the target function
@@ -158,8 +159,8 @@ class TraceGuidedExploration(angr.ExplorationTechnique):
         simgr.stashes['finished'] = simgr.stashes.get('finished', []) + new_finished_states
         
         # Call the parent step method
-        print("DBG: stepping")
-        print(f"DBG: remaining stashes: {simgr.stashes[stash]}")
+        if self.verbose:
+            print(f"Remaining stashes: {simgr.stashes[stash]}")
         simgr.step(stash=stash, **kwargs)
     
     def filter(self, simgr, state, **kwargs):

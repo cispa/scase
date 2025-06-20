@@ -10,9 +10,12 @@ import claripy
 import logging 
 
 from engine import athena
+from engine import exploration_technique
+from engine import utils
+from engine import constants
 
-ENCLAVE_PATH = "./tracers/tracer-sgx/encl.so"
-CFTRACE_FILE = "./tracers/tracer-sgx/cftrace.csv"
+ENCLAVE_PATH = "../traces/square-multiply-enclave/encl.so"
+CFTRACE_FILE = "../traces/square-multiply-enclave/cftrace.csv"
 TARGET_ECALL = "sgx_mod_exp"
 TARGET_FUNC = "mod_exp_inner"
 
@@ -28,7 +31,11 @@ def pause():
     input()
 
 def solve():
-    athena.IGNORE_LOWER_BITS = 12
+    ignore_lower_bits = 12
+    athena.IGNORE_LOWER_BITS = ignore_lower_bits
+    exploration_technique.IGNORE_LOWER_BITS = ignore_lower_bits
+    utils.IGNORE_LOWER_BITS = ignore_lower_bits
+    constants.IGNORE_LOWER_BITS = ignore_lower_bits
 
     athena_framework = athena.AthenaFramework(
         ENCLAVE_PATH, 

@@ -14,9 +14,9 @@ from engine import constants
 from engine import utils
 
 
-TARGET_PATH = "../sbox-aes/victim"
-CFTRACE_FILE = "./tracers/tracer-angr/cftrace.csv"
-DFTRACE_FILE = "./tracers/tracer-angr/dftrace.csv"
+TARGET_PATH =  "../traces/openssl-aes-sbox/victim"
+CFTRACE_FILE = "../traces/openssl-aes-sbox/cftrace.csv"
+DFTRACE_FILE = "../traces/openssl-aes-sbox/dftrace.csv"
 TARGET_ECALL = "main"  # execution starts here
 TARGET_FUNC = "AES_encrypt" # secret is symbolized are added here
 
@@ -53,7 +53,7 @@ def print_key_diff(key1, key2, keylen):
     
 def solve():
 
-    ignore_lower_bits = 6
+    ignore_lower_bits = 0
     athena.IGNORE_LOWER_BITS = ignore_lower_bits
     exploration_technique.IGNORE_LOWER_BITS = ignore_lower_bits
     utils.IGNORE_LOWER_BITS = ignore_lower_bits
@@ -91,7 +91,7 @@ def solve():
     
     athena_framework.run()
     print("[+] Solving...")
-    solution = athena_framework.solve(secret,check_constrained_bits=True)
+    solution = athena_framework.solve(secret,check_constrained_bits=False)
 
     # just copy this from ./experiments/sbox-aes/victim.c
     actual_key_c_repr = '''

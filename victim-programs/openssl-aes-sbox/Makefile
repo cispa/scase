@@ -7,4 +7,4 @@ victim-rekeyed: victim-rekeyed.c ./openssl/crypto/aes/aes_core.c ./openssl/crypt
 	gcc victim-rekeyed.c -static -O0 -ggdb -Wall -I./openssl/include/openssl/ -L./openssl/ -lcrypto -o victim-rekeyed
 
 clean:
-	rm -f victim-rekeyed
+	rm -f victim-rekeyed victim

@@ -7,15 +7,15 @@ import angr
 import claripy
 import logging 
 import time 
+import sys 
+import os 
 
 from engine import athena
 from engine import exploration_technique
 from engine import constants
 from engine import utils
 
-TARGET_PATH = "../TwoPlusTwoHandEvaluator/test"
-CFTRACE_FILE = "./tracers/tracer-angr/cftrace.csv"
-DFTRACE_FILE = "./tracers/tracer-angr/dftrace.csv"
+
 TARGET_ECALL = "main"  # execution starts here
 TARGET_FUNC = "LookupHand" # secret is symbolized are added here
 
@@ -27,7 +27,10 @@ def pause():
     print("Press key to continue...")
     input()
 
-def solve():
+def solve(victim_idx):
+    TARGET_PATH = f"../traces/tpt-hand-evaluator/victim{victim_idx}"
+    CFTRACE_FILE = f"../traces/tpt-hand-evaluator/cftrace{victim_idx}.csv"
+    DFTRACE_FILE = f"../traces/tpt-hand-evaluator/dftrace{victim_idx}.csv"
 
     gran = 0
     athena.IGNORE_LOWER_BITS = gran
@@ -78,11 +81,33 @@ def solve():
         card_array.append(current_card)
 
     print("Reconstructed array:")
-    print(",".join([f"{card}" for card in card_array])) 
+    reconstructed_array = ",".join([f"{card}" for card in card_array])
+    print(reconstructed_array)
     print(f"[+] Time used (exploration): {time_delta_exploration:.2f}s")
     print(f"[+] Time used (solving): {time_delta_solving:.2f}s")
+    return reconstructed_array
     
+
+def check_solution(victim_idx, reconstructed_array):
+    SOLUTION_PATH = f"../traces/tpt-hand-evaluator/solution{victim_idx}.txt"
+    if not os.path.exists(SOLUTION_PATH):
+        print(f"[Solution-Check] Solution file {SOLUTION_PATH} does not exist."
+               "Skipping solution check.")
+    with open(SOLUTION_PATH, "r") as fd:
+        solution = fd.read().strip()
+    print(f"[Solution-Check] Expected key for victim{victim_idx}: {solution}")
+
+    if solution == reconstructed_array:
+        print("[Solution-Check] Solution is correct!")
+    else:
+        print("[Solution-Check] Solution is *incorrect!*")
+
     
 if __name__ == "__main__":
-    solve()
+    if len(sys.argv) != 2:
+        print("Usage: python3 poker_elf.py <1-10>")
+        sys.exit(1)
+    victim_idx = int(sys.argv[1])
+    reconstructed_array = solve(victim_idx)
+    check_solution(victim_idx, reconstructed_array)
 
