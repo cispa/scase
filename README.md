@@ -9,7 +9,7 @@ However, the SGX tracing component is build on top of [SGX-Step](https://github.
 The code was developed and tested on Ubuntu 22.04 and Arch Linux.
 
 ## Dependencies
-Most dependencies can be installed by simply running `pip3 install -r ./athena/requirements.txt`.
+Most dependencies can be installed by simply running `cd athena; pip3 install -r requirements.txt`.
 Furthermore, one needs to install the following (Ubuntu) packages:
 ```
 apt install build-essential libelf-dev 
