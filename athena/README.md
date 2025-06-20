@@ -122,10 +122,10 @@ initial_state.memory.store(rdi_ptr, secret)
 # give Athena the annotated state
 athena_framework.set_initial_state(initial_state)
 
-# Start the emulation
+# start the emulation
 athena_framework.run()
 
-# Read out the recovered secret
+# read out the recovered secret
 solution = athena_framework.solve(secret)
 ```
 
