@@ -4,8 +4,7 @@
 # number of bits to ignore when comparing addresses
 IGNORE_LOWER_BITS = 0
 
-# TODO: check whether that's an issue for euclid
-LOG_STATISTICS = True
+LOG_STATISTICS = False
 
 CF_STEPCOUNTER = "cf_step_counter"
 DF_STEPCOUNTER = "df_step_counter"

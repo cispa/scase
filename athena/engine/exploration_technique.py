@@ -11,13 +11,13 @@ class TraceGuidedExploration(angr.ExplorationTechnique):
                  verbose=False):
         super().__init__()
         if enable_control_flow_tracing:
-            assert(type(control_flow_trace_list) == list)
-            assert(len(control_flow_trace_list) > 0)
-            assert(type(control_flow_trace_list[0]) == TraceEntry)
+            assert type(control_flow_trace_list) == list
+            assert len(control_flow_trace_list) > 0
+            assert type(control_flow_trace_list[0]) == TraceEntry
         if enable_data_flow_tracing:
-            assert(type(data_flow_trace_list) == list)
-            assert(len(data_flow_trace_list) > 0)
-            assert(type(data_flow_trace_list[0]) == TraceEntry)
+            assert type(data_flow_trace_list) == list
+            assert len(data_flow_trace_list) > 0
+            assert type(data_flow_trace_list[0]) == TraceEntry
 
         self.cftrace = control_flow_trace_list
         self.dftrace = data_flow_trace_list
@@ -54,7 +54,7 @@ class TraceGuidedExploration(angr.ExplorationTechnique):
 
         # Note: while zeroing the lower bits of the CFtrace is not necessary for 
         # enclave traces (as they are paged aligned anyway, it makes the framework
-        # capable of handling more fine granular traces, e.g., during the evaluation)
+        # capable of handling more fine-grained traces, e.g., during the evaluation)
         return current_addr == zero_lower_bits(self.cftrace[trace_idx].addr, IGNORE_LOWER_BITS)
 
     def is_aligned_with_dftrace(self, state):

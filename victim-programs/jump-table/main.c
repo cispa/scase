@@ -7,7 +7,7 @@
 
 //#define DEBUGMODE
 
-#define PADDING (sizeof(void*))
+#define PADDING 4096
 #define KEY_FILE "key.hex"
 
 /* Helpers */
