@@ -17,7 +17,7 @@ apt install build-essentials libelf-dev
 For the SGX tracing component, one needs to install [SGX-Step](https://github.com/jovanbulck/sgx-step) according to the installation instructions in its repo.
 
 ## Contact
-If there are questions regarding this tool, please send an email to `daniel.weber (AT) cispa.de` or message `@weber_daniel` on Twitter.
+If there are questions regarding this tool, please send an email to `daniel.weber (AT) cispa.de`.
 
 ## Research Paper
 The paper will be available [very soon](TODO).
