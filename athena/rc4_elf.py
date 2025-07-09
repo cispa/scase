@@ -63,8 +63,7 @@ def solve():
     athena_framework.run()
     print("[+] Solving...")
     solution = athena_framework.solve(secret)
-    solution_enc = f"{solution:064x}".replace("31", "1").replace("00", "0")
-    print(f"[+] Encoded solution: {solution_enc}")
+    print(f"[+] Encoded solution: {solution:064x}")
     
 if __name__ == "__main__":
     solve()
