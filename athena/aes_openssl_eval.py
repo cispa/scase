@@ -64,7 +64,7 @@ def preprocessing(iteration=0, ignore_lower_bits=0, keysize=1):
       f.write(f"{random_seed:064x}\n")
 
     print(f"[-] Compiling with seed {random_seed}")
-    compile_cmd = f"gcc {EVAL_PATH}_{keysize}/victim_{ignore_lower_bits}_{iteration}.c -static -O0 -ggdb -Wall -I../victim-programs/openssl-aes-sbox/openssl/include/ -L../victim-programs-openssl-aes-sbox/openssl/ -lcrypto -o victim"
+    compile_cmd = f"gcc {EVAL_PATH}_{keysize}/victim_{ignore_lower_bits}_{iteration}.c -static -O0 -ggdb -Wall -I../victim-programs/openssl-aes-sbox/openssl/include/ -L../victim-programs/openssl-aes-sbox/openssl/ -lcrypto -o victim"
     os.system(compile_cmd)
     compile_res = subprocess.run(["/bin/bash", "-c", compile_cmd], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     assert compile_res.returncode == 0, "[!] Compilation failed"
