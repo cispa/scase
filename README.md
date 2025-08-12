@@ -1,5 +1,5 @@
 # SCASE
-This repository contains the implementation of the Athena framework discussed in the *upcoming* research paper ["SCASE: Automated Secret Recovery via Side-Channel-Assisted Symbolic Execution" (USENIX 2025) (Link follows soon)](TODO). 
+This repository contains the implementation of the Athena framework discussed in the *upcoming* research paper ["SCASE: Automated Secret Recovery via Side-Channel-Assisted Symbolic Execution" (USENIX 2025)](https://d-we.me/papers/scase_usenix25.pdf). 
 
 The framework automates the recovery of secrets from a given side-channel memory trace.
 
@@ -20,7 +20,7 @@ For the SGX tracing component, one needs to install [SGX-Step](https://github.co
 If there are questions regarding this tool, please send an email to `daniel.weber (AT) cispa.de`.
 
 ## Research Paper
-The paper will be available [very soon](TODO).
+The paper is available [here](https://d-we.me/papers/scase_usenix25.pdf).
 You can cite our work with the following BibTeX entry:
 ```
 @inproceedings{Weber2025SCASE,
